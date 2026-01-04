@@ -90,7 +90,10 @@ func (s *sseSession) GetSessionResources() map[string]ServerResource {
 
 func (s *sseSession) SetSessionResources(resources map[string]ServerResource) {
 	// Clear existing resources
-	s.resources.Clear()
+	s.resources.Range(func(key, value any) bool {
+		s.resources.Delete(key)
+		return true
+	})
 
 	// Set new resources
 	for name, resource := range resources {
@@ -111,7 +114,10 @@ func (s *sseSession) GetSessionResourceTemplates() map[string]ServerResourceTemp
 
 func (s *sseSession) SetSessionResourceTemplates(templates map[string]ServerResourceTemplate) {
 	// Clear existing templates
-	s.resourceTemplates.Clear()
+	s.resourceTemplates.Range(func(key, value any) bool {
+		s.resourceTemplates.Delete(key)
+		return true
+	})
 
 	// Set new templates
 	for uriTemplate, template := range templates {
@@ -132,7 +138,10 @@ func (s *sseSession) GetSessionTools() map[string]ServerTool {
 
 func (s *sseSession) SetSessionTools(tools map[string]ServerTool) {
 	// Clear existing tools
-	s.tools.Clear()
+	s.tools.Range(func(key, value any) bool {
+		s.tools.Delete(key)
+		return true
+	})
 
 	// Set new tools
 	for name, tool := range tools {
@@ -558,7 +567,7 @@ func (s *SSEServer) handleMessage(w http.ResponseWriter, r *http.Request) {
 
 	// Create a context that preserves all values from parent ctx but won't be canceled when the parent is canceled.
 	// this is required because the http ctx will be canceled when the client disconnects
-	detachedCtx := context.WithoutCancel(ctx)
+	detachedCtx := context.Background()
 
 	// quick return request, send 202 Accepted with no body, then deal the message and sent response via SSE
 	w.WriteHeader(http.StatusAccepted)
