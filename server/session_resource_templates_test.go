@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"encoding/json"
-	"maps"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -42,13 +41,13 @@ func (f *sessionTestClientWithResourceTemplates) Initialized() bool {
 func (f *sessionTestClientWithResourceTemplates) GetSessionResourceTemplates() map[string]ServerResourceTemplate {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	return maps.Clone(f.sessionResourceTemplates)
+	return cloneMap(f.sessionResourceTemplates)
 }
 
 func (f *sessionTestClientWithResourceTemplates) SetSessionResourceTemplates(templates map[string]ServerResourceTemplate) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
-	f.sessionResourceTemplates = maps.Clone(templates)
+	f.sessionResourceTemplates = cloneMap(templates)
 }
 
 var _ SessionWithResourceTemplates = (*sessionTestClientWithResourceTemplates)(nil)
@@ -560,4 +559,17 @@ func TestMCPServer_ResourceTemplatesNotificationsDisabled(t *testing.T) {
 	}
 
 	assert.Len(t, session.GetSessionResourceTemplates(), 0)
+}
+
+// cloneMap creates a shallow copy of a map.
+// This is a compatibility function for Go 1.19 (replaces maps.Clone).
+func cloneMap[M ~map[K]V, K comparable, V any](m M) M {
+	if m == nil {
+		return nil
+	}
+	clone := make(M, len(m))
+	for k, v := range m {
+		clone[k] = v
+	}
+	return clone
 }

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"slices"
 	"sync"
 	"sync/atomic"
 
@@ -229,7 +228,7 @@ func (c *Client) Initialize(
 	}
 
 	// Validate protocol version
-	if !slices.Contains(mcp.ValidProtocolVersions, result.ProtocolVersion) {
+	if !containsVersion(mcp.ValidProtocolVersions, result.ProtocolVersion) {
 		return nil, mcp.UnsupportedProtocolVersionError{Version: result.ProtocolVersion}
 	}
 
@@ -717,3 +716,15 @@ func (c *Client) GetSessionId() string {
 func (c *Client) IsInitialized() bool {
 	return c.initialized
 }
+
+// containsVersion checks if a version string exists in a slice of versions.
+// This is a compatibility function for Go 1.19 (replaces slices.Contains).
+func containsVersion(versions []string, version string) bool {
+	for _, v := range versions {
+		if v == version {
+			return true
+		}
+	}
+	return false
+}
+

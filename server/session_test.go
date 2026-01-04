@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"maps"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -136,7 +135,9 @@ func (f *sessionTestClientWithResources) GetSessionResources() map[string]Server
 
 	// Return a copy of the map to prevent concurrent modification
 	resourcesCopy := make(map[string]ServerResource, len(f.sessionResources))
-	maps.Copy(resourcesCopy, f.sessionResources)
+	for k, v := range f.sessionResources {
+		resourcesCopy[k] = v
+	}
 	return resourcesCopy
 }
 
@@ -151,7 +152,9 @@ func (f *sessionTestClientWithResources) SetSessionResources(resources map[strin
 
 	// Create a copy of the map to prevent concurrent modification
 	resourcesCopy := make(map[string]ServerResource, len(resources))
-	maps.Copy(resourcesCopy, resources)
+	for k, v := range resources {
+		resourcesCopy[k] = v
+	}
 	f.sessionResources = resourcesCopy
 }
 

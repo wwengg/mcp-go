@@ -5,7 +5,6 @@ package mcp
 import (
 	"encoding/json"
 	"fmt"
-	"maps"
 	"net/http"
 	"strconv"
 
@@ -171,7 +170,9 @@ func (m *Meta) MarshalJSON() ([]byte, error) {
 	if m.ProgressToken != nil {
 		raw["progressToken"] = m.ProgressToken
 	}
-	maps.Copy(raw, m.AdditionalFields)
+	for k, v := range m.AdditionalFields {
+		raw[k] = v
+	}
 
 	return json.Marshal(raw)
 }

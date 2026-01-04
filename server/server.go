@@ -2,13 +2,10 @@
 package server
 
 import (
-	"cmp"
 	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"maps"
-	"slices"
 	"sort"
 	"sync"
 	"time"
@@ -800,7 +797,7 @@ func (s *MCPServer) protocolVersion(clientVersion string) string {
 		clientVersion = "2025-03-26"
 	}
 
-	if slices.Contains(mcp.ValidProtocolVersions, clientVersion) {
+	if containsVersion(mcp.ValidProtocolVersions, clientVersion) {
 		return clientVersion
 	}
 
@@ -920,9 +917,7 @@ func (s *MCPServer) handleListResources(
 	}
 
 	// Sort the resources by name
-	resourcesList := slices.SortedFunc(maps.Values(resourceMap), func(a, b mcp.Resource) int {
-		return cmp.Compare(a.Name, b.Name)
-	})
+	resourcesList := sortedResources(resourceMap)
 
 	// Apply pagination
 	resourcesToReturn, nextCursor, err := listByPagination(
@@ -1694,4 +1689,28 @@ func getSessionID(ctx context.Context) string {
 		return session.SessionID()
 	}
 	return ""
+}
+
+// containsVersion checks if a version string exists in a slice of versions.
+// This is a compatibility function for Go 1.19 (replaces slices.Contains).
+func containsVersion(versions []string, version string) bool {
+	for _, v := range versions {
+		if v == version {
+			return true
+		}
+	}
+	return false
+}
+
+// sortedResources returns a slice of resources sorted by name.
+// This is a compatibility function for Go 1.19 (replaces slices.SortedFunc(maps.Values(...))).
+func sortedResources(resourceMap map[string]mcp.Resource) []mcp.Resource {
+	resources := make([]mcp.Resource, 0, len(resourceMap))
+	for _, resource := range resourceMap {
+		resources = append(resources, resource)
+	}
+	sort.Slice(resources, func(i, j int) bool {
+		return resources[i].Name < resources[j].Name
+	})
+	return resources
 }

@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"slices"
 	"sort"
 	"sync"
 	"testing"
@@ -1747,7 +1746,7 @@ func TestMCPServer_ResourceTemplates(t *testing.T) {
 
 		// resource templates are stored in a map, so the order is not guaranteed
 		for _, rt := range listResult.ResourceTemplates {
-			assert.True(t, slices.Contains([]string{
+			assert.True(t, containsString([]string{
 				"My Resource",
 				"Another Resource 1",
 				"Another Resource 2",
@@ -2865,4 +2864,15 @@ func TestMCPServer_ListTools(t *testing.T) {
 		assert.Len(t, tools3, 1)
 		assert.Contains(t, tools3, "test-tool")
 	})
+}
+
+// containsString checks if a string exists in a slice of strings.
+// This is a compatibility function for Go 1.19 (replaces slices.Contains).
+func containsString(slice []string, target string) bool {
+	for _, s := range slice {
+		if s == target {
+			return true
+		}
+	}
+	return false
 }

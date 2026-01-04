@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"maps"
 	"mime"
 	"net/http"
 	"net/http/httptest"
@@ -892,7 +891,9 @@ func (s *sessionResourcesStore) get(sessionID string) map[string]ServerResource 
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	cloned := make(map[string]ServerResource, len(s.resources[sessionID]))
-	maps.Copy(cloned, s.resources[sessionID])
+	for k, v := range s.resources[sessionID] {
+		cloned[k] = v
+	}
 	return cloned
 }
 
@@ -900,7 +901,9 @@ func (s *sessionResourcesStore) set(sessionID string, resources map[string]Serve
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	cloned := make(map[string]ServerResource, len(resources))
-	maps.Copy(cloned, resources)
+	for k, v := range resources {
+		cloned[k] = v
+	}
 	s.resources[sessionID] = cloned
 }
 
@@ -925,7 +928,9 @@ func (s *sessionResourceTemplatesStore) get(sessionID string) map[string]ServerR
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	cloned := make(map[string]ServerResourceTemplate, len(s.templates[sessionID]))
-	maps.Copy(cloned, s.templates[sessionID])
+	for k, v := range s.templates[sessionID] {
+		cloned[k] = v
+	}
 	return cloned
 }
 
@@ -933,7 +938,9 @@ func (s *sessionResourceTemplatesStore) set(sessionID string, templates map[stri
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	cloned := make(map[string]ServerResourceTemplate, len(templates))
-	maps.Copy(cloned, templates)
+	for k, v := range templates {
+		cloned[k] = v
+	}
 	s.templates[sessionID] = cloned
 }
 
@@ -958,7 +965,9 @@ func (s *sessionToolsStore) get(sessionID string) map[string]ServerTool {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	cloned := make(map[string]ServerTool, len(s.tools[sessionID]))
-	maps.Copy(cloned, s.tools[sessionID])
+	for k, v := range s.tools[sessionID] {
+		cloned[k] = v
+	}
 	return cloned
 }
 
@@ -966,7 +975,9 @@ func (s *sessionToolsStore) set(sessionID string, tools map[string]ServerTool) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	cloned := make(map[string]ServerTool, len(tools))
-	maps.Copy(cloned, tools)
+	for k, v := range tools {
+		cloned[k] = v
+	}
 	s.tools[sessionID] = cloned
 }
 
